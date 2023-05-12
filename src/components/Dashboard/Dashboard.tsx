@@ -1,27 +1,25 @@
-import axios from "axios";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { ICharacter } from "../../models/Character";
 import { Card } from "../Card";
+import { useLazyGetAllCharactersQuery } from "../../services/RickAndMortyService";
+import { useAppSelector } from "../../store/hooks";
 
 const Dashboard = () => {
-  const [characters, setCharacters] = useState([]);
-  const url = 'https://rickandmortyapi.com/api/';
-
-  const getAllCharacters = () => {
-    axios.get(`${url}character`)
-      .then((response) => {
-        console.log(response);
-        setCharacters(response.data.results);
-      })
-      .catch((error) => console.error(error))
-  }
+  const [getAllCharacters] = useLazyGetAllCharactersQuery();
+  const characters = useAppSelector((state) => state.characterState.characters);
+  const next = useAppSelector((state) => state.characterState.next);
 
   useEffect(() => {
-    getAllCharacters();
+    getAllCharacters(0);
   }, [])
-  return <div className="flex flex-wrap gap-3">
-    {characters.map((character: ICharacter) => 
-    <Card character={character} key={character?.id} />)}
+
+  return <div className="flex flex-col gap-3" >
+    <div className="flex flex-wrap gap-3">
+      {characters.map((character: ICharacter, index: number) =>
+        <Card character={character} key={index} />)}
+    </div>
+
+    <button onClick={() => getAllCharacters(next)}>Load More</button>
   </div>
 }
 
