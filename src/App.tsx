@@ -16,6 +16,7 @@ let router = createBrowserRouter([
     element: <Character />,
   }
 ]);
+
 function App() {
   return (
     <>
